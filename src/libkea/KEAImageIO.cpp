@@ -48,6 +48,7 @@ namespace kealib{
     KEAImageIO::KEAImageIO()
     {
         this->fileOpen = false;
+        H5::Exception::dontPrint();
     }
     
     std::string KEAImageIO::readString(H5::DataSet& dataset, H5::DataType strDataType)
