@@ -589,7 +589,35 @@ namespace kealib{
     
     void KEAAttributeTable::addAttDateTimeField(const std::string &name, const KEADateTime &val, const std::string &usage)
     {
-        throw KEAATTException("Unimplemented");
+        try 
+        {
+            // Check whether the name already exists. Names need to be unique.
+            if(fields->count(name) > 0)
+            {
+                std::string message = std::string("Field \'") + name + std::string("\' is already within the attribute table.");
+                throw KEAATTException(message);
+            }
+            
+            // Create Field
+            KEAATTField nField;
+            nField.name = name;
+            nField.dataType = kea_att_datetime;
+            nField.idx = numDatetimeFields;
+            nField.usage = usage;
+            nField.colNum = numOfCols;
+            
+            // Get the implementation to created the new field
+            this->addAttDateTimeField(nField, val);
+            
+            // If no exception thrown added to header.
+            fields->insert(std::pair<std::string, KEAATTField>(name, nField));
+            ++numDatetimeFields;
+            ++numOfCols;
+        }
+        catch (const KEAATTException &e)
+        {
+            throw e;
+        }
     }
     
     void KEAAttributeTable::addAttWKBField(const std::string &name, uint8_t *pData, size_t wkbsize, const std::string &usage)
@@ -1057,7 +1085,7 @@ namespace kealib{
             pAtt->chunkSize = chunkSize;
             
             // READ TABLE HEADERS
-            auto fieldCompTypeMem = KEAAttributeTable::createAttributeIdxCompType();
+            // auto fieldCompTypeMem = KEAAttributeTable::createAttributeIdxCompType();
             
             bool firstColNum = true;
             
@@ -1310,7 +1338,6 @@ namespace kealib{
         throw KEAATTException("Unimplemented");
     }
 
-    // for future versions of KEA
     void KEAAttributeTable::addAttDateTimeField(KEAATTField field, const KEADateTime &val)
     {
         throw KEAATTException("Unimplemented");
